@@ -35,11 +35,13 @@ public class CommentController {
         return commentRepository.save(comment);
     }
 
+    // 댓글 수정
     @PutMapping("/comment/{id}")
     public Comment updateComment(@PathVariable Long id, @RequestBody CommentRequestDto requestDto) {
         return commentService.update(id, requestDto);
     }
 
+    // 댓글 삭제
     @DeleteMapping("/comment/{id}")
     public void deleteComment(@PathVariable Long id) {
         commentRepository.deleteById(id);
