@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@Api(tags = {"2. Commet_댓글api"}) // Swagger # 2. Comment 댓글
+@Api(tags = {"2-1. Commet_댓글api"}) // Swagger # 2. Comment 댓글
 @RequiredArgsConstructor
 @RestController
 public class CommentController {
