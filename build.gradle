@@ -36,6 +36,12 @@ dependencies {
     // JWT
     implementation 'io.jsonwebtoken:jjwt:0.9.1'
 
+    // 셀레니움 https://mvnrepository.com/artifact/org.seleniumhq.selenium/selenium-java
+    compileOnly group: 'org.seleniumhq.selenium', name: 'selenium-java', version: '3.3.1'
+
+    // Swagger 추가
+    implementation "io.springfox:springfox-boot-starter:3.0.0"
+    implementation "io.springfox:springfox-swagger-ui:3.0.0"
 }
 
 test {
