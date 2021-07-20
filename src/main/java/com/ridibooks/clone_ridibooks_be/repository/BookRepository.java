@@ -5,7 +5,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.Optional;
+
 public interface BookRepository extends JpaRepository<Book, Long > {
     Page<Book> findByCategoryIsGreaterThanAndCategoryIsLessThan(Long minCategory, Long maxCategory, Pageable pageable);
     Page<Book> findAllByCategory(Long category,Pageable pageable);
+    Optional<Book> findById(Long id);
 }

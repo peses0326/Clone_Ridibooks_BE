@@ -34,7 +34,6 @@ public class BookController {
     @ApiOperation(value = "책 detail조회", notes = "책을 page로 조회합니다.")
     @GetMapping("/book/{id}")
     public Book getBook(@PathVariable Long id){
-        Book bookDetail = bookRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("해당 Id가 존재하지 않습니다."));
-        return bookDetail;
+        return bookRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("해당 Id가 존재하지 않습니다."));
     }
 }
