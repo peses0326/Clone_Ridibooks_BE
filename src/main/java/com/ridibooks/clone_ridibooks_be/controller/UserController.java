@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 
-@Api(tags = {"3. User_회원 관리"}) // Swagger # 3. 회원 관리
+@Api(tags = {"4. User_회원 관리"}) // Swagger # 3. 회원 관리
 @RequiredArgsConstructor
 @RestController
 public class UserController {

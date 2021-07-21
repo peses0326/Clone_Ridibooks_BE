@@ -24,7 +24,7 @@ public class BookController {
     @GetMapping("/category/{category}")
     public Page<Book> getBookCategoryPage(@RequestParam(value = "page", required = false, defaultValue = "1") int page,
                                           @RequestParam(value = "size", required = false, defaultValue = "24") int size,
-                                          @RequestParam(value = "sortBy", required = false, defaultValue = "id") String sortBy,
+                                          @RequestParam(value = "sortBy", required = false, defaultValue = "publicationDate") String sortBy,
                                           @RequestParam(value = "isAsc", required = false, defaultValue = "false") boolean isAsc,
                                           @PathVariable Long category) {
         page = page - 1;

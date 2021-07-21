@@ -26,10 +26,23 @@ public class Comment extends Timestamped { // 생성,수정 시간을 자동으�
     @Column(nullable = false)
     private String username;
 
+    @Transient
+    private Long likesCount;
+
+    @Transient
+    private Boolean likeItChecker;
+
+    public void addlikesCount(Long count) {
+        this.likesCount = count;}
+
+    public void changeLikeItChecker(Boolean trueOrFalse) {
+        this.likeItChecker = trueOrFalse;}
     //유저 id
     //@ManyToOne(fetch = FetchType.EAGER)
     //@JoinColumn(name = "user_id")
     //private User user;
+//    @OneToMany(mappedBy = "comment", cascade =CascadeType.ALL)
+//    private Set<LikeIt> likeIt = new HashSet<>();
 
     public Comment(Long bookId, String comments, Long stars, String username) {
         this.bookId = bookId;
@@ -47,5 +60,6 @@ public class Comment extends Timestamped { // 생성,수정 시간을 자동으�
 
     public void update(CommentRequestDto requestDto) {
         this.comments = requestDto.getComments();
+        this.stars = requestDto.getStars();
     }
 }

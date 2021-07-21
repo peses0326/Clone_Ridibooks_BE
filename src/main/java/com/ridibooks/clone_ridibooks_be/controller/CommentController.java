@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@Api(tags = {"2-1. Commet_댓글api"}) // Swagger # 2. Comment 댓글
+@Api(tags = {"2. Commet_댓글api"}) // Swagger # 2. Comment 댓글
 @RequiredArgsConstructor
 @RestController
 public class CommentController {
@@ -24,15 +24,24 @@ public class CommentController {
     // 댓글 전체 조회
     @ApiOperation(value = "전체 댓글 조회", notes = "모든 댓글을 조회합니다.")
     @GetMapping("/comment")
-    public List<Comment> getAllComment() {
-        return commentRepository.findAllByOrderByIdDesc();
+    public List<Comment> getAllComment(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        if (userDetails != null) {
+            return commentService.likeItChecker(commentRepository.findAllByOrderByIdDesc(), userDetails.getUser());
+        } else {
+            return commentService.likeItChecker(commentRepository.findAllByOrderByIdDesc(), null);
+        }
     }
 
     // 책별 댓글 조회
     @ApiOperation(value = "책별 댓글 조회", notes = "책별 댓글을 조회합니다.")
     @GetMapping("/comment/{bookId}")
-    public List<Comment> getComment(@PathVariable Long bookId) {
-        return commentRepository.findAllByBookIdOrderByCreatedAtDesc(bookId).orElseThrow(() -> new IllegalArgumentException("해당 bookId가 없습니다."));
+    public List<Comment> getComment(@PathVariable Long bookId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        List<Comment> commentList = commentRepository.findAllByBookIdOrderByCreatedAtDesc(bookId).orElseThrow(()->new IllegalArgumentException("bookId가 존재하지 않습니다."));
+        if (userDetails != null) {
+            return commentService.likeItChecker(commentList, userDetails.getUser());
+        } else {
+            return commentService.likeItChecker(commentList, null);
+        }
     }
 
     // 로그인 유저 댓글 가져오기
