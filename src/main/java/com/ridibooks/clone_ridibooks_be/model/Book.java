@@ -3,19 +3,16 @@ package com.ridibooks.clone_ridibooks_be.model;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
-import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
 
-@Setter
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
 public class Book {
 
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Id
     private Long id;
 
@@ -50,19 +47,16 @@ public class Book {
     private String publicationDate; // 출간일
 
     @Column(nullable = false)
-    @ColumnDefault("0")
-    private double stars; // 평정
+    private Double avgStars; // 평균 평점
 
-    public Book(Long category, String categoryDetail, String bookname, String imgUrl, String bookDetailElements, String bookIntro, String writerIntro, String bgColor, String bookIndex, String publicationDate) {
-        this.category = category;
-        this.categoryDetail = categoryDetail;
-        this.bookname = bookname;
-        this.imgUrl = imgUrl;
-        this.bookDetailElements = bookDetailElements;
-        this.bookIntro = bookIntro;
-        this.writerIntro = writerIntro;
-        this.bgColor = bgColor;
-        this.bookIndex = bookIndex;
-        this.publicationDate = publicationDate;
+    @Column(nullable = false)
+    private Long countStars; // 평점 총 개수
+
+    public void updateCountStars(Long countStars) {
+        this.countStars = countStars;
+    }
+
+    public void updateAvgStars(Double avgStars) {
+        this.avgStars = avgStars;
     }
 }

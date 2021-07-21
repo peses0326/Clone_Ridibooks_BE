@@ -21,7 +21,7 @@ public class Comment extends Timestamped { // 생성,수정 시간을 자동으�
     private String comments;
 
     @Column(nullable = false)
-    private Long stars;
+    private Double stars;
 
     @Column(nullable = false)
     private String username;
@@ -44,7 +44,7 @@ public class Comment extends Timestamped { // 생성,수정 시간을 자동으�
 //    @OneToMany(mappedBy = "comment", cascade =CascadeType.ALL)
 //    private Set<LikeIt> likeIt = new HashSet<>();
 
-    public Comment(Long bookId, String comments, Long stars, String username) {
+    public Comment(Long bookId, String comments, Double stars, String username) {
         this.bookId = bookId;
         this.comments = comments;
         this.stars = stars;

@@ -58,9 +58,8 @@ public class CommentController {
     // 댓글 생성
     @ApiOperation(value = "댓글 생성", notes = "해당 댓글을 생성합니다.")
     @PostMapping("/comment")
-    public Comment createComment(@RequestBody CommentRequestDto requestDto) {
-        Comment comment = new Comment(requestDto);
-        return commentRepository.save(comment);
+    public void createComment(@RequestBody CommentRequestDto requestDto) {
+        commentService.createComment(requestDto);
     }
 
     // 댓글 수정

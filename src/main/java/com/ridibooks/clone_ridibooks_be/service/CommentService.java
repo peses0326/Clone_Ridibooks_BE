@@ -1,9 +1,11 @@
 package com.ridibooks.clone_ridibooks_be.service;
 
 import com.ridibooks.clone_ridibooks_be.dto.CommentRequestDto;
+import com.ridibooks.clone_ridibooks_be.model.Book;
 import com.ridibooks.clone_ridibooks_be.model.Comment;
 import com.ridibooks.clone_ridibooks_be.model.LikeIt;
 import com.ridibooks.clone_ridibooks_be.model.User;
+import com.ridibooks.clone_ridibooks_be.repository.BookRepository;
 import com.ridibooks.clone_ridibooks_be.repository.CommentRepository;
 import com.ridibooks.clone_ridibooks_be.repository.LikeItRepository;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +21,7 @@ public class CommentService {
 
     private final CommentRepository commentRepository;
     private final LikeItRepository likeItRepository;
+    private final BookRepository bookRepository;
 
     @Transactional  // 댓글 수정 기능
     public Comment update(Long id, CommentRequestDto requestDto) {
@@ -64,4 +67,36 @@ public class CommentService {
         }
         return commentList;
     }
-}
+
+    @Transactional
+    public void createComment(CommentRequestDto requestDto) {
+        Comment comment = new Comment(requestDto);
+        commentRepository.save(comment);
+
+        Book book = bookRepository.findById(requestDto.getBookId()).orElseThrow(()->new IllegalArgumentException("bookId 가 없습니다."));
+
+        Double avg = book.getAvgStars();
+        Long count = book.getCountStars();
+
+        book.updateCountStars(count + 1L);
+        book.updateAvgStars((avg * count + requestDto.getStars()) / book.getCountStars());
+    }}
+/*
+    @Transactional
+    public void createComment(CommentRequestDto requestDto) {
+        Comment comment = new Comment(requestDto);
+        commentRepository.save(comment);
+
+        Optional<Book> book = bookRepository.findByBookId(requestDto.getBookId());
+
+        if (stars.isPresent()) {
+            Double avg = stars.get().getAvgStars();
+            Long count = stars.get().getCountStars();
+
+            stars.get().setCountStars(count + 1L);
+            stars.get().setAvgStars((avg * count + requestDto.getStars()) / stars.get().getCountStars());
+        } else {
+            Stars newStars = new Stars(requestDto.getBookId(), requestDto.getStars(), 1L);
+            starsRepository.save(newStars);
+        }
+    }*/

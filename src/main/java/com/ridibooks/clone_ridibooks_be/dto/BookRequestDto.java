@@ -14,5 +14,6 @@ public class BookRequestDto {
     private String bgColor;
     private String bookIndex;
     private String publicationDate;
-    private String stars;
+    private Double avgStars;
+    private Double countStars;
 }
