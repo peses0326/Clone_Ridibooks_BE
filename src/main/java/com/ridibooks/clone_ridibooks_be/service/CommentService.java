@@ -19,10 +19,34 @@ public class CommentService {
     private final BookRepository bookRepository;
     private final StarsRepository starsRepository;
 
+    // 댓글 생성
+    @Transactional
+    public void createComment(CommentRequestDto requestDto) {
+        // 댓글 저장
+        if (!starCheckInRange(requestDto.getStars())) {
+            throw new IllegalArgumentException("stars가 범위를 벗어났습니다.");
+        }
+        Comment comment = new Comment(requestDto);
+        commentRepository.save(comment);
+
+        // 책 별점 업데이트
+        Book book = getBook(requestDto.getBookId());
+        updateBookStars(requestDto, book);
+
+        // 별점 테이블 업데이트
+        Stars stars = book.getStars();
+        if (stars != null) {
+            updateStars(stars, requestDto.getStars());
+        } else {
+            creatStars(book, requestDto.getStars());
+        }
+    }
+
     @Transactional  // 댓글 수정
     public Comment update(Long commentId, CommentRequestDto requestDto) {
-        Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new IllegalArgumentException("commentId가 존재하지 않습니다."));
-        Book book = bookRepository.findById(comment.getBookId()).orElseThrow(() -> new IllegalArgumentException("bookId가 존재하지 않습니다."));
+        // 별점 테이블 수정
+        Comment comment = getComment(commentId);
+        Book book = getBook(comment.getBookId());
         Stars stars = book.getStars();
         Double avgStars = stars.getAvgStar();
         Long totalCount = stars.getTotalCount();
@@ -32,28 +56,38 @@ public class CommentService {
             countDownStar(stars, comment.getStars());
             countUpStar(stars, requestDto.getStars());
         }
+        book.updateAvgStars(stars.getAvgStar());
+        // 댓글 수정 업데이트
         comment.update(requestDto);
         return comment;
     }
 
-    // 댓글 생성
+    // 댓글 삭제
     @Transactional
-    public void createComment(CommentRequestDto requestDto) {
-        if (!starCheckInRange(requestDto.getStars())) {
-            throw new IllegalArgumentException("stars가 범위를 벗어났습니다.");
-        }
-        Comment comment = new Comment(requestDto);
-        commentRepository.save(comment);
-        // 책 별점 업데이트
-        Book book = bookRepository.findById(requestDto.getBookId()).orElseThrow(() -> new IllegalArgumentException("bookId가 존재하지 않습니다."));
-        updateBookStars(requestDto, book);
-
+    public void deleteComment(Long commentId){
+        // 별점 테이블 수정
+        Comment comment = getComment(commentId);
+        Book book = getBook(comment.getBookId());
         Stars stars = book.getStars();
-        if (stars != null) {
-            updateStars(stars, requestDto.getStars());
-        } else {
-            creatStars(book, requestDto.getStars());
-        }
+        Double avgStars = stars.getAvgStar();
+        Long totalCount = stars.getTotalCount();
+        int beforeStars = comment.getStars();
+        stars.setAvgStar(Math.round((avgStars * totalCount - beforeStars) / (totalCount-1L) * 10) / 10.0);
+        stars.setTotalCount(totalCount-1L);
+        countDownStar(book.getStars(), comment.getStars());
+        // 책 별점 수정
+        book.updateAvgStars(stars.getAvgStar());
+        book.updateCountStars(stars.getTotalCount());
+        //댓글 삭제
+        commentRepository.deleteById(commentId);
+    }
+
+    public Comment getComment(Long commentId){
+        return commentRepository.findById(commentId).orElseThrow(() -> new IllegalArgumentException("commentId가 존재하지 않습니다."));
+    }
+
+    public Book getBook(Long bookId){
+        return bookRepository.findById(bookId).orElseThrow(() -> new IllegalArgumentException("bookId가 존재하지 않습니다."));
     }
 
     public boolean starCheckInRange(int stars) {
@@ -113,20 +147,5 @@ public class CommentService {
         } else if (ratedStar == 5) {
             stars.setStar5Count(stars.getStar5Count() - 1);
         }
-    }
-
-    @Transactional
-    public void deleteComment(Long commentId){
-        Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new IllegalArgumentException("commentId가 존재하지 않습니다."));
-        Book book = bookRepository.findById(comment.getBookId()).orElseThrow(() -> new IllegalArgumentException("bookId가 존재하지 않습니다."));
-        Stars stars = book.getStars();
-        Double avgStars = stars.getAvgStar();
-        Long totalCount = stars.getTotalCount();
-        int beforeStars = comment.getStars();
-
-        stars.setAvgStar(Math.round((avgStars * totalCount - beforeStars) / (totalCount-1L) * 10) / 10.0);
-        stars.setTotalCount(totalCount-1L);
-        countDownStar(book.getStars(), comment.getStars());
-        commentRepository.deleteById(commentId);
     }
 }
