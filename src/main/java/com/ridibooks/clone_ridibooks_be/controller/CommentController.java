@@ -5,6 +5,7 @@ import com.ridibooks.clone_ridibooks_be.model.Comment;
 import com.ridibooks.clone_ridibooks_be.repository.CommentRepository;
 import com.ridibooks.clone_ridibooks_be.security.UserDetailsImpl;
 import com.ridibooks.clone_ridibooks_be.service.CommentService;
+import com.ridibooks.clone_ridibooks_be.service.LikeItService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
@@ -20,15 +21,16 @@ public class CommentController {
 
     private final CommentRepository commentRepository;
     private final CommentService commentService;
+    private final LikeItService likeItService;
 
     // 댓글 전체 조회
     @ApiOperation(value = "전체 댓글 조회", notes = "모든 댓글을 조회합니다.")
     @GetMapping("/comment")
     public List<Comment> getAllComment(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         if (userDetails != null) {
-            return commentService.likeItChecker(commentRepository.findAllByOrderByIdDesc(), userDetails.getUser());
+            return likeItService.likeItChecker(commentRepository.findAllByOrderByIdDesc(), userDetails.getUser());
         } else {
-            return commentService.likeItChecker(commentRepository.findAllByOrderByIdDesc(), null);
+            return likeItService.likeItChecker(commentRepository.findAllByOrderByIdDesc(), null);
         }
     }
 
@@ -38,9 +40,9 @@ public class CommentController {
     public List<Comment> getComment(@PathVariable Long bookId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         List<Comment> commentList = commentRepository.findAllByBookIdOrderByCreatedAtDesc(bookId).orElseThrow(()->new IllegalArgumentException("bookId가 존재하지 않습니다."));
         if (userDetails != null) {
-            return commentService.likeItChecker(commentList, userDetails.getUser());
+            return likeItService.likeItChecker(commentList, userDetails.getUser());
         } else {
-            return commentService.likeItChecker(commentList, null);
+            return likeItService.likeItChecker(commentList, null);
         }
     }
 

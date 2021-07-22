@@ -19,7 +19,8 @@ public class LikeItController {
     public String LikeIt(@PathVariable Long commentId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         if (userDetails != null){
             return likeItService.addLike(userDetails.getUser(), commentId);
+        }else {
+            throw new IllegalArgumentException("로그인이 필요합니다.");
         }
-        return "not login";
     }
 }

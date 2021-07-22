@@ -7,5 +7,5 @@ public class CommentRequestDto {
     private String username;
     private Long bookId;
     private String comments;
-    private Double stars;
+    private int stars;
 }

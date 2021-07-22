@@ -21,7 +21,7 @@ public class Comment extends Timestamped { // 생성,수정 시간을 자동으�
     private String comments;
 
     @Column(nullable = false)
-    private Double stars;
+    private int stars;
 
     @Column(nullable = false)
     private String username;
@@ -37,14 +37,8 @@ public class Comment extends Timestamped { // 생성,수정 시간을 자동으�
 
     public void changeLikeItChecker(Boolean trueOrFalse) {
         this.likeItChecker = trueOrFalse;}
-    //유저 id
-    //@ManyToOne(fetch = FetchType.EAGER)
-    //@JoinColumn(name = "user_id")
-    //private User user;
-//    @OneToMany(mappedBy = "comment", cascade =CascadeType.ALL)
-//    private Set<LikeIt> likeIt = new HashSet<>();
 
-    public Comment(Long bookId, String comments, Double stars, String username) {
+    public Comment(Long bookId, String comments, int stars, String username) {
         this.bookId = bookId;
         this.comments = comments;
         this.stars = stars;

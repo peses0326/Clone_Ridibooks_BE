@@ -8,6 +8,7 @@ import com.ridibooks.clone_ridibooks_be.repository.LikeItRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -28,8 +29,27 @@ public class LikeItService {
             return "false";
         }
     }
-
     private Optional<LikeIt> likeItChecker(User user, Comment comment) {
         return likeItRepository.findByUserAndComment(user, comment);
+    }
+
+    // 좋아요 누름/안누름 체크
+    public List<Comment> likeItChecker(List<Comment> commentList, User user) {
+        for (Comment value : commentList) {
+            Long commentId = value.getId();
+            Long likesCount = likeItRepository.countByCommentId(commentId);
+            value.addlikesCount(likesCount);
+            if (user != null) {
+                Optional<LikeIt> LikeItCheck = likeItRepository.findByUserAndComment(user, value);
+                if (LikeItCheck.isPresent()) {
+                    value.changeLikeItChecker(true);
+                } else {
+                    value.changeLikeItChecker(false);
+                }
+            } else {
+                value.changeLikeItChecker(false);
+            }
+        }
+        return commentList;
     }
 }
