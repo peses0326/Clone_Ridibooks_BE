@@ -52,14 +52,19 @@ public class Book {
     @Column(nullable = false)
     private Long countStars; // 평점 총 개수
 
-//    @OneToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name="Stars_ID",nullable = true)
-//    private Stars stars;
+    @OneToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name="Stars_ID",nullable = true)
+    private Stars stars;
+
     public void updateCountStars(Long countStars) {
         this.countStars = countStars;
     }
 
     public void updateAvgStars(Double avgStars) {
         this.avgStars = avgStars;
+    }
+
+    public void createStars(Stars stars) {
+        this.stars = stars;
     }
 }

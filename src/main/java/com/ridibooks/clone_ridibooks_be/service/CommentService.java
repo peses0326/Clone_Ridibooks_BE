@@ -11,7 +11,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
@@ -42,9 +41,10 @@ public class CommentService {
         Book book = bookRepository.findById(requestDto.getBookId()).orElseThrow(()->new IllegalArgumentException("bookId가 존재하지 않습니다."));
         updateBookStars(requestDto, book);
 
-        Optional<Stars> stars = starsRepository.findByBookId(requestDto.getBookId());
-        if (stars.isPresent()) {
-            updateStars(book, requestDto.getStars());
+//        Optional<Stars> stars = starsRepository.findByBookId(requestDto.getBookId());
+        Stars stars = book.getStars();
+        if (stars != null) {
+            updateStars(stars, requestDto.getStars());
         } else {
             creatStars(book, requestDto.getStars());
         }
@@ -63,32 +63,29 @@ public class CommentService {
     }
 
     @Transactional
-    public void updateStars(Book book, int ratedStar){
-        Optional<Stars> stars = starsRepository.findByBookId(book.getId());
+    public void updateStars(Stars stars, int ratedStar){
 
-        if (stars.isPresent()) {
-            Stars beforeStars =stars.get();
-            Float avgStar = beforeStars.getAvgStar();
-            Long totalCount = beforeStars.getTotalCount();
-            beforeStars.setTotalCount(totalCount + 1L);
-            beforeStars.setAvgStar((avgStar * totalCount + ratedStar) / beforeStars.getTotalCount());
+            Float avgStar = stars.getAvgStar();
+            Long totalCount = stars.getTotalCount();
+            stars.setTotalCount(totalCount + 1L);
+            stars.setAvgStar((avgStar * totalCount + ratedStar) / stars.getTotalCount());
 
             if (ratedStar==1) {
-                beforeStars.setStar1Count(beforeStars.getStar1Count()+1);
+                stars.setStar1Count(stars.getStar1Count()+1);
             }else if(ratedStar==2){
-                beforeStars.setStar2Count(beforeStars.getStar2Count()+1);
+                stars.setStar2Count(stars.getStar2Count()+1);
             }else if(ratedStar==3){
-                beforeStars.setStar3Count(beforeStars.getStar3Count()+1);
+                stars.setStar3Count(stars.getStar3Count()+1);
             }else if(ratedStar==4){
-                beforeStars.setStar4Count(beforeStars.getStar4Count()+1);
+                stars.setStar4Count(stars.getStar4Count()+1);
             }else if(ratedStar==5){
-                beforeStars.setStar5Count(beforeStars.getStar5Count()+1);
+                stars.setStar5Count(stars.getStar5Count()+1);
             }
-        }}
+        }
 
     @Transactional
     public void creatStars(Book book, int ratedStar){
-        Stars stars = new Stars(book);
+        Stars stars = new Stars();
 
         stars.setTotalCount(1L);
         stars.setAvgStar((float)ratedStar);
@@ -105,6 +102,7 @@ public class CommentService {
             stars.setStar5Count(stars.getStar5Count()+1);
         }
         starsRepository.save(stars);
+        book.createStars(stars);
     }
 
 }

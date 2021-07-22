@@ -17,11 +17,12 @@ import javax.persistence.*;
 public class Stars {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Id
+    @Column(name="Stars_Id")
     private Long id;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="Book_ID",nullable = false)
-    private Book book;
+//    @OneToOne(fetch = FetchType.EAGER)
+//    @JoinColumn(name="Book_ID",nullable = false)
+//    private Book book;
 
     @Column(nullable = false)
     @ColumnDefault("0") //default 0
@@ -51,9 +52,9 @@ public class Stars {
     @ColumnDefault("0") //default 0
     private int star5Count; // 별점 5점 개수
 
-    public Stars(Book book) {
-        this.book = book;
-    }
+//    public Stars(Book book) {
+//        this.book = book;
+//    }
 
     public void updateStars(StarsRequestDto requestDto){
         this.avgStar = avgStar;
