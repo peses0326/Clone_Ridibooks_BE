@@ -26,7 +26,7 @@ public class Stars {
 
     @Column(nullable = false)
     @ColumnDefault("0") //default 0
-    private Float avgStar; // 별점 평균
+    private Double avgStar; // 별점 평균
 
     @Column(nullable = false)
     @ColumnDefault("0") //default 0

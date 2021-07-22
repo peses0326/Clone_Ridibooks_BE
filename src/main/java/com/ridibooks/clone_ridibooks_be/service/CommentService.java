@@ -21,14 +21,17 @@ public class CommentService {
 
     @Transactional  // 댓글 수정
     public Comment update(Long commentId, CommentRequestDto requestDto) {
-        Comment comment = commentRepository.findById(commentId).orElseThrow(
-                () -> new IllegalArgumentException("아이디가 존재하지 않습니다."));
-        Book book = bookRepository.findById(requestDto.getBookId()).orElseThrow(()->new IllegalArgumentException("bookId가 존재하지 않습니다."));
+        Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new IllegalArgumentException("commentId가 존재하지 않습니다."));
+        Book book = bookRepository.findById(comment.getBookId()).orElseThrow(() -> new IllegalArgumentException("bookId가 존재하지 않습니다."));
         Stars stars = book.getStars();
-        float avgStars = stars.getAvgStar();
+        Double avgStars = stars.getAvgStar();
         Long totalCount = stars.getTotalCount();
         int beforeStars = comment.getStars();
-        stars.setAvgStar((avgStars*totalCount-beforeStars+requestDto.getStars())/totalCount);
+        stars.setAvgStar(Math.round((avgStars * totalCount - beforeStars + requestDto.getStars()) / totalCount * 10) / 10.0);
+        if (requestDto.getStars() != comment.getStars()) {
+            countDownStar(stars, comment.getStars());
+            countUpStar(stars, requestDto.getStars());
+        }
         comment.update(requestDto);
         return comment;
     }
@@ -61,23 +64,24 @@ public class CommentService {
         Double avg = book.getAvgStars();
         Long count = book.getCountStars();
         book.updateCountStars(count + 1L);
-        book.updateAvgStars((avg * count + requestDto.getStars()) / book.getCountStars());
+        book.updateAvgStars(Math.round((avg * count + requestDto.getStars()) / book.getCountStars() * 10) / 10.0);
     }
 
     @Transactional
     public void updateStars(Stars stars, int ratedStar) {
-        Float avgStar = stars.getAvgStar();
+        Double avgStar = stars.getAvgStar();
         Long totalCount = stars.getTotalCount();
         stars.setTotalCount(totalCount + 1L);
-        stars.setAvgStar((avgStar * totalCount + ratedStar) / stars.getTotalCount());
+        stars.setAvgStar(Math.round((avgStar * totalCount + ratedStar) / stars.getTotalCount() * 10) / 10.0);
         countUpStar(stars, ratedStar);
     }
 
+    //    double result1 = Math.round(num * 100) / 100.0
     @Transactional
     public void creatStars(Book book, int ratedStar) {
         Stars stars = new Stars();
         stars.setTotalCount(1L);
-        stars.setAvgStar((float) ratedStar);
+        stars.setAvgStar(Math.round(ratedStar * 10) / 10.0);
         countUpStar(stars, ratedStar);
         starsRepository.save(stars);
         book.createStars(stars);
@@ -95,5 +99,34 @@ public class CommentService {
         } else if (ratedStar == 5) {
             stars.setStar5Count(stars.getStar5Count() + 1);
         }
+    }
+
+    private void countDownStar(Stars stars, int ratedStar) {
+        if (ratedStar == 1) {
+            stars.setStar1Count(stars.getStar1Count() - 1);
+        } else if (ratedStar == 2) {
+            stars.setStar2Count(stars.getStar2Count() - 1);
+        } else if (ratedStar == 3) {
+            stars.setStar3Count(stars.getStar3Count() - 1);
+        } else if (ratedStar == 4) {
+            stars.setStar4Count(stars.getStar4Count() - 1);
+        } else if (ratedStar == 5) {
+            stars.setStar5Count(stars.getStar5Count() - 1);
+        }
+    }
+
+    @Transactional
+    public void deleteComment(Long commentId){
+        Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new IllegalArgumentException("commentId가 존재하지 않습니다."));
+        Book book = bookRepository.findById(comment.getBookId()).orElseThrow(() -> new IllegalArgumentException("bookId가 존재하지 않습니다."));
+        Stars stars = book.getStars();
+        Double avgStars = stars.getAvgStar();
+        Long totalCount = stars.getTotalCount();
+        int beforeStars = comment.getStars();
+
+        stars.setAvgStar(Math.round((avgStars * totalCount - beforeStars) / (totalCount-1L) * 10) / 10.0);
+        stars.setTotalCount(totalCount-1L);
+        countDownStar(book.getStars(), comment.getStars());
+        commentRepository.deleteById(commentId);
     }
 }

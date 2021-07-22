@@ -4,7 +4,7 @@ import lombok.Getter;
 
 @Getter
 public class StarsRequestDto {
-    private Float avgStar;
+    private Double avgStar;
     private Long totalCount;
     private int star5Count;
     private int star4Count;

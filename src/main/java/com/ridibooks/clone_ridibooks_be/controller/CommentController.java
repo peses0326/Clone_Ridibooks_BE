@@ -75,6 +75,6 @@ public class CommentController {
     @ApiOperation(value = "댓글 삭제", notes = "해당 댓글을 삭제합니다.")
     @DeleteMapping("/comment/{commentId}")
     public void deleteComment(@PathVariable Long commentId) {
-        commentRepository.deleteById(commentId);
+        commentService.deleteComment(commentId);
     }
 }
