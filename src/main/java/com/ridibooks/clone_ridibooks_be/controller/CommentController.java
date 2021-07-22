@@ -66,15 +66,15 @@ public class CommentController {
 
     // 댓글 수정
     @ApiOperation(value = "댓글 수정", notes = "해당 댓글을 수정합니다.")
-    @PutMapping("/comment/{id}")
-    public Comment updateComment(@PathVariable Long id, @RequestBody CommentRequestDto requestDto) {
-        return commentService.update(id, requestDto);
+    @PutMapping("/comment/{commentId}")
+    public Comment updateComment(@PathVariable Long commentId, @RequestBody CommentRequestDto requestDto) {
+        return commentService.update(commentId, requestDto);
     }
 
     // 댓글 삭제
     @ApiOperation(value = "댓글 삭제", notes = "해당 댓글을 삭제합니다.")
-    @DeleteMapping("/comment/{id}")
-    public void deleteComment(@PathVariable Long id) {
-        commentRepository.deleteById(id);
+    @DeleteMapping("/comment/{commentId}")
+    public void deleteComment(@PathVariable Long commentId) {
+        commentRepository.deleteById(commentId);
     }
 }
